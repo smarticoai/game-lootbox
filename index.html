@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Custom Loot-box Game</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.cdnfonts.com/css/exquisite-corpse" rel="stylesheet">
+    <link href="https://fonts.cdnfonts.com/css/shlop-2" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Advent+Pro:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Creepster&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Eater&display=swap" rel="stylesheet">
+    <link href="./assets/css/styles.css" rel="stylesheet">  
+    
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+
+        const _label_key = urlParams.get('label_key') || 'a6e7ac26-c368-4892-9380-96e7ff82cf3e-4';
+        const _brand_key = urlParams.get('brand_key') || 'f86271e6';
+        const _smartico_user_id = urlParams.get('user_ext_id') || 'test48054049';
+        const _saw_template_id = urlParams.get('saw_template_id') || 1437;
+        const gameLanguage = urlParams.get('lang') || "en";
+
+        window._smartico_allow_localhost = true;
+        window._smartico_user_id = _smartico_user_id;
+        window._smartico_language = gameLanguage;
+    </script>
+
+    <script>
+        (function(d, r, b, h, s){h=d.getElementsByTagName('head')[0];s = d.createElement('script');s.onload=b;s.src=r;h.appendChild(s);})
+        (document, 'https://libs.smartico.ai/smartico.js', function() {
+            _smartico.init(_label_key, { brand_key: _brand_key});
+            
+            _smartico.on('init', () => {
+                _smartico.suspendInbox(true);
+                _smartico.suspendPopups(true);
+                initializeGame(_saw_template_id, gameLanguage);
+            });
+        });
+    </script>
+</head>
+<body>
+    <div class="header">
+        Example of a custom mini-game on <a href="https://smartico.ai">Smartico</a> platform<br/>
+        Check the source code on <a href="https://github.com/smarticoai/game-lootbox" target="_blank">https://github.com/smarticoai/game-lootbox</a>
+    </div>
+    <div class="game-container">
+        <div class="game-wrapper">
+            <div id="loading" class="loading">
+                <div class="spinner"></div>
+            </div>
+            <div class="game-content">
+                <div class="game-header-container">
+                    <div class="game-header-title">
+                        <div class="game-title" id="game-title"></div>
+                    </div>
+                    <div class="game-header-description" id="game-header-description"></div>
+                </div>
+                <div class="game-center">
+                    <div class="prize-card-container" id="prize-card-container">
+                        <div class="game-cards" id="game-cards"></div>              
+                    </div>
+                </div>
+                <div class="game-footer">
+                    <div class="game-footer-container">
+                        <div class="game-nav-buttons">
+                            <div class="game-nav-btn left" id="scroll-left">
+                                <div class="game-nav-arrow left"></div>
+                            </div>
+                            <div class="game-nav-btn right" id="scroll-right">
+                                <div class="game-nav-arrow right"></div>
+                            </div>
+                        </div>
+                        <div class="game-footer-rules">
+                            <div class="game-rules-btn" onclick="handleOpenRules();">
+                                <div class="rules-button-text" id="rules-button-text"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="rules-modal" class="rules-modal"></div>
+            <div id="prize-modal" class="prize-modal"></div>
+            <div id="out-of-stock-modal" class="out-of-stock-modal"></div>
+        </div>
+    </div>
+
+    <script src="./assets/js/game.js"></script>
+</body>
+</html>

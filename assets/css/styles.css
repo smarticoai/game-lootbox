@@ -1,0 +1,988 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.header {
+    text-align: center;
+    position: relative;
+    top: 50px;
+}
+
+.game-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    width: 100%;
+}
+
+.game-container .game-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1118px;
+    height: 670px;
+    background-image: url('../../assets/img/game-bg.png');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    margin: 0 auto;
+    position: relative;
+}
+
+.game-container .game-wrapper .loading {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    opacity: 0.7;
+    display: none;
+    transition: all 1s ease;
+}
+
+.game-container .game-wrapper .loading .spinner {
+    border: 8px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    border-top: 8px solid #fff;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+}
+
+.game-wrapper .game-content {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+}
+
+.game-wrapper .game-content .game-header-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    width: 100%;
+    margin-top: 10px;
+    flex: 1;
+}
+
+.game-wrapper .game-content .game-header-container .game-header-title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 90%;
+}
+
+.game-wrapper .game-content .game-header-container .game-header-title .game-title {
+    font-family: "Eater", serif;
+    font-size: 47px;
+    line-height: 60px;
+    text-align: center;
+    color: #FFE5E1;
+    display: -webkit-box;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    width: 90%;
+}
+
+.game-wrapper .game-content .game-header-container .game-header-description {
+    font-family: "Advent Pro", sans-serif;
+    font-weight: 700;
+    font-size: 24px;
+    text-align: center;
+    line-height: 29px;
+    color: #FFFFFF;
+    width: 70%;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.game-wrapper .game-content .game-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    flex: 4;
+}
+
+.game-wrapper .game-content .game-center .prize-card-container {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    height: 100%;
+    position: relative;
+    overflow-x: scroll;
+    scrollbar-width: none;
+    padding: 0 20px;
+    transition: transform 0.5s ease;
+}
+
+.game-wrapper .game-content .game-center .prize-card-container .game-cards {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    gap: 20px;
+}
+
+
+/* Prize Cards */
+
+.prize-card {
+  position: relative;
+  width: 189px;
+  height: 290px;
+  perspective: 500px;
+  transition: transform 1s;
+  cursor: pointer;
+  border-radius: 18px;
+}
+
+.prize-card:first-of-type {
+    display: none;
+}
+
+.prize-card.active-prize {
+    height: 335px;
+    width: 228px;
+}
+
+.prize-card-content {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  transition: transform 1s;
+  transform-style: preserve-3d;
+  border-radius: 18px;
+}
+
+.prize-card-content.active-prize:hover {
+    box-shadow: 0 0 6px 3px #E7D6FF;
+}
+
+.prize-card-content.claimed:hover {
+    box-shadow: none;
+}
+
+.prize-card-content.missed:hover {
+    pointer-events: none;
+}
+
+.prize-card.flip .prize-card-content,
+.prize-card.missed .prize-card-content {
+  transform: rotateY( 180deg );
+}
+
+.prize-card.flip {
+    cursor: auto;
+}
+
+.front-side,
+.back-side {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  border-radius: 18px;
+  padding: 5px 14px;
+  backface-visibility: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-direction: column;
+}
+
+.front-side {
+    background-image: url('../img/card-front-bg.png');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.back-side {
+  background: radial-gradient(50% 50% at 50% 50%, #4A01B5 0%, #3E043D 100%);
+  transform: rotateY(180deg);
+}
+
+.back-side::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 18px;
+    background-image: url('../img/card-back-bg.png');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    mix-blend-mode: overlay;
+    filter: opacity(0.3);
+    pointer-events: none;
+}
+
+.prize-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.prize-content .prize-front-prize-name {
+    text-align: center;
+    font-family: 'Advent Pro', sans-serif;
+    font-weight: 700;
+    font-size: 21px;
+    color: #FFF;
+    display: -webkit-box;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+.prize-content .prize-front-image {
+    width: 120px;
+    height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    filter: drop-shadow(0 0 15px #44027a);
+}
+
+.prize-content .prize-claim-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #99E4B9;
+    border-radius: 8px;
+    width: 100%;
+    position: relative;
+    cursor: pointer;
+    padding: 10px;
+    height: 50px;
+}
+
+.prize-content .prize-claim-btn:hover {
+    filter: opacity(0.7);
+}
+
+.prize-content .prize-claim-btn::before {
+    content: '';
+    position: absolute;
+    bottom: -22px;
+    left: -9px;
+    width: 131px;
+    height: 23px;
+    background-image: url('../img/claim-btn-drips.png');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+}
+
+.prize-content .prize-claim-btn .prize-claim-btn-text {
+    display: -webkit-box;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    text-align: center;
+    font-family: 'Advent Pro', sans-serif;
+    font-weight: 700;
+    font-size: 21px;
+    color: #000000;
+}
+
+.prize-number {
+    display: flex;
+    width: 100%;
+    font-family: "Creepster", system-ui;
+    color: #FFFFFF;
+    font-size: 36px;
+    text-align: left;
+}
+
+.prize-number.top {
+    align-items: flex-start;
+    justify-content: flex-start;
+}
+
+.prize-number.bottom {
+    align-items: flex-end;
+    justify-content: flex-end;
+}
+
+.prize-card .prize-card-content .prize-card-bottom-glow {
+    position: absolute;
+    bottom: -30px;
+    left: 0;
+    width: 189px;
+    height: 12px;
+    background: #BD05B7;
+    border-radius: 50%;
+    filter: blur(4px);
+}
+
+.prize-card .prize-card-content .prize-card-bottom-glow.active-prize {
+    width: 228px;
+}
+
+.prize-card.locked, .prize-card.missed {
+    cursor: auto;
+}
+
+.prize-card.locked::before {
+    content: '';
+    position: absolute;
+    top: -3px;
+    left: -4px;
+    width: 195px;
+    height: 303px;
+    background-image: url('../img/locked.png');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    z-index: 3;
+}
+
+.back-side.missed {
+    background: radial-gradient(50% 50% at 50% 50%, #4A01B5 0%, #3E043D 100%);
+}
+
+.back-side.missed::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 189px;
+    height: 290px;
+    background-image: url('../img/missed.png');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    mix-blend-mode: color-dodge;
+    filter: unset;
+    z-index: 1;
+}
+
+/* Game Footer */
+
+.game-wrapper .game-content .game-footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100px;
+    flex: 1;
+    position: relative;
+}
+
+.game-wrapper .game-content .game-footer .game-footer-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    height: 100%;
+    width: 100%;
+}
+
+.game-wrapper .game-content .game-footer .game-footer-container .game-nav-buttons {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+}
+
+.game-wrapper .game-content .game-footer .game-footer-container .game-nav-buttons .game-nav-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #99E4B9;
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    padding: 12px;
+    position: relative;
+    cursor: pointer;
+}
+
+.game-wrapper .game-content .game-footer .game-footer-container .game-nav-buttons .game-nav-btn:hover {
+    filter: opacity(0.7);
+}
+
+.game-wrapper .game-content .game-footer .game-footer-container .game-nav-buttons .game-nav-btn.left::before, 
+.game-wrapper .game-content .game-footer .game-footer-container .game-nav-buttons .game-nav-btn.right::before {
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    
+}
+
+.game-wrapper .game-content .game-footer .game-footer-container .game-nav-buttons .game-nav-btn.left::before {
+    content: '';
+    position: absolute;
+    bottom: -34px;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('../img/button-drips.png');
+}
+
+.game-wrapper .game-content .game-footer .game-footer-container .game-nav-buttons .game-nav-btn.right::before {
+    content: '';
+    position: absolute;
+    bottom: -34px;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('../img/button-drips.png');
+    transform: rotateY(180deg);
+}
+
+.game-wrapper .game-content .game-footer .game-footer-container .game-nav-buttons .game-nav-btn .game-nav-arrow {
+    width: 9px;
+    height: 19px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+}
+
+.game-wrapper .game-content .game-footer .game-footer-container .game-nav-buttons .game-nav-btn .game-nav-arrow.left {
+    background-image: url('../img/nav-arrow.png');
+}
+
+.game-wrapper .game-content .game-footer .game-footer-container .game-nav-buttons .game-nav-btn .game-nav-arrow.right {
+    background-image: url('../img/nav-arrow.png');
+    transform: rotateY(180deg);
+}
+
+.game-wrapper .game-content .game-footer .game-footer-container .game-footer-rules {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    bottom: 53px;
+    right: 30px;
+}
+
+.game-wrapper .game-content .game-footer .game-footer-container .game-footer-rules .game-rules-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 105px;
+    height: 49px;
+    cursor: pointer;
+    background: #FF5F72;
+    border-radius: 8px;
+    position: relative;
+    padding: 10px;
+}
+
+.game-wrapper .game-content .game-footer .game-footer-container .game-footer-rules .game-rules-btn:hover {
+    filter: opacity(0.7);
+}
+
+.game-wrapper .game-content .game-footer .game-footer-container .game-footer-rules .game-rules-btn::before {
+    content: '';
+    position: absolute;
+    bottom: -32px;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('../img/rules-btn-drips.png');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+}
+
+.game-wrapper .game-content .game-footer .game-footer-container .game-footer-rules .game-rules-btn .rules-button-text {
+    font-family: 'Advent Pro', sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 24px;
+    text-align: center;
+    color: #FFF;
+}
+
+
+/* Modal Rules */
+
+.game-wrapper .modal-wrapper {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: rgba(0, 0, 0, .9);
+    opacity: 0;
+    z-index: 1000;
+    transition: opacity .5s ease-in;
+    visibility: hidden;
+}
+
+.game-wrapper .modal-wrapper.active {
+    visibility: visible;
+    opacity: 1;
+}
+
+.game-wrapper .modal-wrapper .modal-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 28px;
+}
+
+.game-wrapper .modal-wrapper .modal-content .modal-content-text {
+    width: 380px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.game-wrapper .modal-wrapper .modal-content .modal-content-text .modal-content-title {
+    font-family: "Eater", serif;
+    font-size: 30px;
+    line-height: 42px;
+    color: #FF5F72;
+    text-align: center;
+}
+
+.game-wrapper .modal-wrapper .modal-content .modal-content-text .modal-content-rules {
+    font-family: 'Advent Pro', sans-serif;
+    font-size: 16px;
+    line-height: 24px;
+    text-align: center;
+    color: #FFF;
+}
+
+.game-wrapper .modal-wrapper .modal-content .modal-content-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 145px;
+    height: 49px;
+    position: relative;
+    cursor: pointer;
+    background: #FF5F72;
+    border-radius: 8px;
+    padding: 10px;
+}
+
+.game-wrapper .modal-wrapper .modal-content .modal-content-button:hover {
+    filter: opacity(0.7);
+}
+
+.game-wrapper .modal-wrapper .modal-content .modal-content-button::before {
+    content: '';
+    position: absolute;
+    bottom: -36px;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('../img/rules-btn-drips.png');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+}
+
+.game-wrapper .modal-wrapper .modal-content .modal-content-button .modal-content-button-text {
+    font-family: 'Advent Pro', sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 24px;
+    text-align: center;
+    color: #FFF;
+}
+
+/* Modal Prize */
+
+.game-wrapper .modal-prize-wrapper {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: rgba(0, 0, 0, .9);
+    opacity: 0;
+    z-index: 1000;
+    transition: opacity .5s ease-in;
+    visibility: hidden;
+}
+
+.game-wrapper .modal-prize-wrapper.active {
+    visibility: visible;
+    opacity: 1;
+}
+
+.game-wrapper .modal-prize-wrapper .modal-prize-card {
+    width: 440px;
+    height: 280px;
+    border-radius: 8px;
+    background: #3E043D;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.game-wrapper .modal-prize-wrapper .modal-close-button {
+    position: absolute;
+    right: 14px;
+    top: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    transition: 0.25s ease-out;
+    cursor: pointer;
+    z-index: 1;
+}
+
+.game-wrapper .modal-prize-wrapper .modal-close-button:hover {
+    transform: rotate(180deg);
+}
+
+.game-wrapper .modal-prize-wrapper .modal-close-button .close-btn {
+    background: #FFF;
+    height: 16px;
+    width: 16px;
+    -webkit-clip-path: path("M8,9.4L1.4,16L0,14.6L6.6,8L0,1.4L1.4,0L8,6.6L14.6,0L16,1.4L9.4,8l6.6,6.6L14.6,16L8,9.4z");
+    clip-path: path("M8,9.4L1.4,16L0,14.6L6.6,8L0,1.4L1.4,0L8,6.6L14.6,0L16,1.4L9.4,8l6.6,6.6L14.6,16L8,9.4z")
+}
+
+
+.game-wrapper .modal-prize-wrapper .modal-prize-content {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 14px;
+    gap: 16px;
+}
+
+.game-wrapper .modal-prize-wrapper .modal-prize-content .modal-prize-text-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.game-wrapper .modal-prize-wrapper .modal-prize-content .modal-prize-text-content .modal-prize-title {
+    font-family: "Eater", serif;
+    font-size: 30px;
+    font-weight: 400;
+    color: #99E4B9;
+    text-transform: uppercase;
+}
+
+.game-wrapper .modal-prize-wrapper .modal-prize-content .modal-prize-text-content .modal-prize-title.stock {
+    color: #FF5F72;
+}
+
+.game-wrapper .modal-prize-wrapper .modal-prize-content .modal-prize-text-content .modal-prize-message {
+    font-family: 'Advent Pro', sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 24px;
+    color: #FFF;
+}
+
+.game-wrapper .modal-prize-wrapper .modal-prize-content .modal-prize-buttons {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    gap: 16px;
+}
+
+.game-wrapper .modal-prize-wrapper .modal-prize-content .modal-prize-buttons.two-btn {
+    justify-content: space-between;
+}
+
+.game-wrapper .modal-prize-wrapper .modal-prize-content .modal-prize-buttons .modal-prize-button {
+    width: 157px;
+    height: 49px;
+    border-radius: 8px;
+    padding: 10px;
+    background: #99E4B9;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.game-wrapper .modal-prize-wrapper .modal-prize-content .modal-prize-buttons .modal-prize-button.cancel,
+.game-wrapper .modal-prize-wrapper .modal-prize-content .modal-prize-buttons .modal-prize-button.stock {
+    background: #FF5F72;
+}
+
+.game-wrapper .modal-prize-wrapper .modal-prize-content .modal-prize-buttons .modal-prize-button:hover {
+    filter: opacity(0.7);
+}
+
+.game-wrapper .modal-prize-wrapper .modal-prize-content .modal-prize-buttons .modal-prize-button:before {
+    content: '';
+    position: absolute;
+    bottom: -36px;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('../img/claim-btn-drips.png');
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center;
+}
+
+.game-wrapper .modal-prize-wrapper .modal-prize-content .modal-prize-buttons .modal-prize-button.cancel::before,
+.game-wrapper .modal-prize-wrapper .modal-prize-content .modal-prize-buttons .modal-prize-button.stock::before {
+    background-image: url('../img/rules-btn-drips.png');
+}
+
+.game-wrapper .modal-prize-wrapper .modal-prize-content .modal-prize-buttons .modal-prize-button .modal-prize-button-text {
+    font-family: 'Advent Pro', sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 24px;
+    color: #000;
+}
+
+.game-wrapper .modal-prize-wrapper .modal-prize-content .modal-prize-buttons .modal-prize-button .modal-prize-button-text.cancel {
+    color: #FFF;
+}
+
+@media (min-width: 414px) and (max-width: 768px) {
+    .game-container {
+        height: 100dvh;
+        width: 100dvw;
+    }
+
+    .game-container .game-wrapper {
+        background-image: url('../img/game-bg-mobile.png');
+        width: 100dvw;
+        height: 100dvh;
+        margin: unset;
+        background-size: cover;
+        overflow: hidden;
+    }
+
+    .game-wrapper .game-content {
+        justify-content: space-between;
+        padding: 20px 0;
+    }
+
+    .game-wrapper .game-content .game-header-container {
+        height: unset;
+        width: 100%;
+        margin-top: unset;
+        flex: none;
+        gap: 10px;
+    }
+
+    .game-wrapper .game-content .game-header-container .game-header-title {
+        width: 95%;
+        align-items: flex-start;
+    }
+
+    .game-wrapper .game-content .game-header-container .game-header-title .game-title {
+        font-size: 30px;
+        line-height: 35px;
+        width: 90%;
+        display: -webkit-box;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+    }
+
+    .game-wrapper .game-content .game-header-container .game-header-description {
+        font-size: 21px;
+        -webkit-line-clamp: 3;
+        line-height: unset;
+        width: 90%;
+    }
+
+    .game-wrapper .game-content .game-center {
+        flex: none;
+        height: 480px;
+    }
+
+    .game-wrapper .game-content .game-center .prize-card-container {
+        scroll-snap-type: x mandatory;
+    }
+
+    .game-wrapper .game-content .game-center .prize-card-container .game-cards {
+        gap: 30px;
+    }
+
+    .prize-card {
+        scroll-snap-align: center;
+        width: 212px;
+        height: 326px;
+    }
+
+    .prize-card.active-prize {
+        width: 240px;
+        height: 370px;
+    }
+
+    .prize-card.locked::before {
+        width: 218px;
+        height: 339px;
+    }
+
+    .back-side.missed::before {
+        width: 100%;
+        height: 100%;
+    }
+
+    .prize-card .prize-card-content .prize-card-bottom-glow {
+        width: 212px;
+    }
+
+    .prize-card .prize-card-content .prize-card-bottom-glow.active-prize {
+        width: 240px;
+    }
+
+    .game-wrapper .game-content .game-footer {
+        flex: none;
+    }
+
+    .game-wrapper .game-content .game-footer .game-footer-container .game-footer-rules {
+        right: 10px;
+    }
+
+    .game-wrapper .modal-wrapper .modal-content .modal-content-text {
+        width: 330px;
+    }
+
+    .game-wrapper .modal-prize-wrapper .modal-prize-card {
+        width: 330px;
+    }
+}
+
+@media (min-width: 320px) and (max-width: 413px) {
+
+    .game-container {
+        height: 100dvh;
+        width: 100dvw;
+    }
+
+    .game-container .game-wrapper {
+        background-image: url('../img/game-bg-mobile.png');
+        width: 100dvw;
+        height: 100dvh;
+        margin: unset;
+        background-size: cover;
+        overflow: hidden;
+    }
+
+    .game-wrapper .game-content {
+        justify-content: space-between;
+        padding: 20px 0 0;
+    }
+
+    .game-wrapper .game-content .game-header-container {
+        height: unset;
+        width: 100%;
+        margin-top: unset;
+        flex: none;
+        gap: 10px;
+    }
+
+    .game-wrapper .game-content .game-header-container .game-header-title {
+        width: 95%;
+        align-items: flex-start;
+    }
+
+    .game-wrapper .game-content .game-header-container .game-header-title .game-title {
+        font-size: 28px;
+        line-height: 35px;
+        width: 90%;
+        display: -webkit-box;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+    }
+
+    .game-wrapper .game-content .game-header-container .game-header-description {
+        font-size: 21px;
+        line-height: unset;
+        -webkit-line-clamp: 3;
+        width: 90%;
+    }
+
+    .game-wrapper .game-content .game-center {
+        height: 410px;
+    }
+
+    .game-wrapper .game-content .game-center .prize-card-container {
+        scroll-snap-type: x mandatory;
+    }
+
+    .game-wrapper .game-content .game-center .prize-card-container .game-cards {
+        gap: 30px;
+    }
+
+    .prize-card.active-prize {
+        width: 212px;
+        height: 326px;
+    }
+
+    .back-side.missed::before {
+        width: 100%;
+        height: 100%;
+    }
+
+    .prize-card .prize-card-content .prize-card-bottom-glow.active-prize {
+        width: 212px;
+    }
+
+    .game-wrapper .game-content .game-footer {
+        flex: none;
+    }
+
+    .game-wrapper .game-content .game-footer .game-footer-container .game-footer-rules {
+        right: 10px;
+    }
+
+    .game-wrapper .modal-wrapper .modal-content .modal-content-text {
+        width: 330px;
+    }
+
+    .game-wrapper .modal-prize-wrapper .modal-prize-card {
+        width: 330px;
+    }
+}
