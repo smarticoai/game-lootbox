@@ -26,6 +26,8 @@ let cardClaimModal = false;
 let translations = {};
 const SCROLL_MOVE = 200;
 
+// Prize availability status (isLocked, isMissed, isClaimed) by active time of the prize
+
 const getPrizeStatus = (prize, index) => {
     let isLocked = false;
     let isMissed = false;
@@ -36,8 +38,8 @@ const getPrizeStatus = (prize, index) => {
     const activeFrom = prize.active_from_ts ? new Date(prize.active_from_ts) : null;
     const activeTill = prize.active_till_ts ? new Date(prize.active_till_ts) : null;
 
-    if (activeFrom) activeFrom.setHours(0, 0, 0, 0);
-    if (activeTill) activeTill.setHours(0, 0, 0, 0);
+    if (activeFrom) activeFrom.setHours(0, 0, 0, 0); // resetting active_from_ts to 00
+    if (activeTill) activeTill.setHours(0, 0, 0, 0); // resetting active_till_ts to 00
 
     const historyItem = miniGamesHistory.find(
         (history) => history.saw_prize_id === prize.id && history.saw_template_id === selectedGame.id
@@ -83,6 +85,8 @@ const getPrizeStatus = (prize, index) => {
 
     return { isLocked, isMissed, isClaimed };
 };
+
+// Get correct weekday name, if the restricted date type is by weekdays
 
 const getNextWeekdayDate = (weekdays) => {
     const today = new Date();
@@ -132,6 +136,8 @@ prizeCardContainer.addEventListener('mouseup', onDragEnd);
 prizeCardContainer.addEventListener('mouseleave', onDragEnd);
 scrollLeftButton.addEventListener('mousedown', (e) => handleScroll(e, "left"));
 scrollRightButton.addEventListener('mousedown', (e) => handleScroll(e, "right"));
+
+// Initial loading of game, prizes, history and translations
 
 const loadMiniGames = async (saw_template_id, lang) => {
     if (window._smartico) {
@@ -231,6 +237,8 @@ const handlePrizeFlip = async (prize, index) => {
     }
 };
 
+// Use this function on order to trigger playMiniGame event and claim your prize
+
 const handleClaimPrizeInModal = async () => {
     try {
         const { prize_id } = await window._smartico.api.playMiniGame(selectedGame.id);
@@ -267,6 +275,7 @@ const renderPrizeCards = (lang) => {
 
     prizeCards.innerHTML = '';
 
+    // Sort prizes by active_from_ts or by weekdays
     prizes.sort((a, b) => {
         const activeFromA = a.active_from_ts || 0;
         const activeFromB = b.active_from_ts || 0;
@@ -308,6 +317,8 @@ const renderPrizeCards = (lang) => {
         const acknowledgeWithClaim = prize.acknowledge_type === 'explicity-acknowledge';
 
         const { isLocked, isMissed, isClaimed } = getPrizeStatus(prize, index);
+
+        // Proper naming of the month depending on the restriction type (by days/weekdays)
 
         if (index === 0) {
             monthDate = defaultPrizeDate;
@@ -370,7 +381,7 @@ const renderPrizeCards = (lang) => {
             }
         }
 
-
+        // scroll into an active prize card both on mobile and desktop
         const activePrizeCard = document.querySelector(`.prize-card[data-index="${activePrizeId}"]`);
         if (activePrizeId && prizeCardContainer) {
             setTimeout(() => {

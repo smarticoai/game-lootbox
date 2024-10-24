@@ -31,7 +31,7 @@
         (function(d, r, b, h, s){h=d.getElementsByTagName('head')[0];s = d.createElement('script');s.onload=b;s.src=r;h.appendChild(s);})
         (document, 'https://libs.smartico.ai/smartico.js', function() {
             _smartico.init(_label_key, { brand_key: _brand_key});
-            
+            // suspending popups and inbox on this screen, so player will not be interrupted from the game itself
             _smartico.on('init', () => {
                 _smartico.suspendInbox(true);
                 _smartico.suspendPopups(true);
