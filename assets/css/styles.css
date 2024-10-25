@@ -6,17 +6,58 @@
     -webkit-tap-highlight-color: transparent;
 }
 
+body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    height: 100vh;
+    width: 100%;
+}
+
 .header {
     text-align: center;
     position: relative;
+    top: 25px;
+}
+
+.user {
+    position: relative;
     top: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-family: "Advent Pro", sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+}
+
+.user input {
+    padding: 4px;
+    border: 1px solid #000;
+    border-radius: 8px;
+}
+
+.user-button {
+    font-family: "Advent Pro", sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+    padding: 4px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    border: 1px solid #000;
+    background: transparent;
 }
 
 .game-container {
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 100vh;
+    height: 100%;
     width: 100%;
 }
 
@@ -783,6 +824,30 @@
 }
 
 @media (min-width: 414px) and (max-width: 768px) {
+    body {
+        height: 100dvh;
+    }
+
+    .header {
+        display: none;
+    }
+
+    .user {
+        top: 160px;
+        color: #FFF;
+        z-index: 10;
+        position: absolute;
+    }
+
+    .user input {
+        border: 1px solid #FFF;
+    }
+
+    .user-button {
+        border: 1px solid #FFF;
+        color: #FFF;
+    }
+
     .game-container {
         height: 100dvh;
         width: 100dvw;
@@ -893,6 +958,30 @@
 }
 
 @media (min-width: 320px) and (max-width: 413px) {
+
+    body {
+        height: 100dvh;
+    }
+
+    .header {
+        display: none;
+    }
+
+    .user {
+        top: 145px;
+        color: #FFF;
+        z-index: 10;
+        position: absolute;
+    }
+
+    .user input {
+        border: 1px solid #FFF;
+    }
+
+    .user-button {
+        border: 1px solid #FFF;
+        color: #FFF;
+    }
 
     .game-container {
         height: 100dvh;

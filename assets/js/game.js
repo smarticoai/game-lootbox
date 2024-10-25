@@ -153,6 +153,8 @@ const loadMiniGames = async (saw_template_id, lang) => {
             selectedGame = miniGames.find((g) => g.id === parseInt(saw_template_id, 10));
             prizes = selectedGame.prizes;
 
+            console.log("playerInfo", playerInfo)
+
             const gamesHistory = await window._smartico.api.getMiniGamesHistory({ limit: 100, offset: 0, saw_template_id: saw_template_id });
             miniGamesHistory = gamesHistory;
 
