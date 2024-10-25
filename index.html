@@ -10,14 +10,14 @@
     <link href="https://fonts.googleapis.com/css2?family=Creepster&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Eater&display=swap" rel="stylesheet">
     <link href="./assets/css/styles.css" rel="stylesheet">
-    <link href="/assets/favicon.png" rel="icon" type="image/x-icon">
+    <link href="/assets/favicon.ico" rel="icon" type="image/x-icon">
 
     <script>
         const urlParams = new URLSearchParams(window.location.search);
 
         const _label_key = urlParams.get('label_key') || 'a6e7ac26-c368-4892-9380-96e7ff82cf3e-4';
         const _brand_key = urlParams.get('brand_key') || 'f86271e6';
-        const defaultUser = urlParams.get('user_ext_id') || 'test48054049';
+        const defaultUser = urlParams.get('user_ext_id') || 'lootbox82464760';
         const _saw_template_id = urlParams.get('saw_template_id') || 1437;
         const gameLanguage = urlParams.get('lang') || "en";
 
@@ -28,18 +28,16 @@
     <script>
         window.addEventListener('DOMContentLoaded', function () {
             const userInput = document.getElementById('user');
-
-            const savedUser = window.localStorage.getItem('user') || defaultUser;
             
             if (userInput) {
-                userInput.value = savedUser;
+                userInput.value = defaultUser;
             }
 
             window.localStorage.getItem('label_key') || _label_key;
             window.localStorage.getItem('brand_key') || _brand_key;
             window.localStorage.getItem('saw_template_id') || _saw_template_id;
             window.localStorage.getItem('lang') || gameLanguage;
-            window._smartico_user_id = savedUser;
+            window._smartico_user_id = defaultUser;
 
             urlParams.set('user_ext_id', defaultUser);
             const newUrl = window.location.pathname + '?' + urlParams.toString();
