@@ -197,10 +197,6 @@ body {
   border-radius: 18px;
 }
 
-.prize-card:first-of-type {
-    display: none;
-}
-
 .prize-card.active-prize {
     height: 335px;
     width: 228px;

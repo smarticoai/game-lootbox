@@ -49,35 +49,31 @@ const getPrizeStatus = (prize, index) => {
         isClaimed = historyItem.is_claimed;
     }
 
-    if (index === 0) {
-        isLocked = false;
-    } else {
-        if (activeFrom || activeTill) {
-            isLocked = activeFrom && today < activeFrom;
-            if (!isClaimed && (activeFrom && today > activeTill)) {
-                isMissed = true;
-                isLocked = false;
-            }
+    if (activeFrom || activeTill) {
+        isLocked = activeFrom && today < activeFrom;
+        if (!isClaimed && (activeFrom && today > activeTill)) {
+            isMissed = true;
+            isLocked = false;
         }
+    }
 
-        if (prize.weekdays && prize.weekdays.length > 0) {
-            const isTodayPrizeDay = prize.weekdays.includes(todayWeekday);
+    if (prize.weekdays && prize.weekdays.length > 0) {
+        const isTodayPrizeDay = prize.weekdays.includes(todayWeekday);
 
-            if (isTodayPrizeDay) {
-                isLocked = false;
-                isMissed = false;
-            } else {
-                isLocked = true;
+        if (isTodayPrizeDay) {
+            isLocked = false;
+            isMissed = false;
+        } else {
+            isLocked = true;
 
-                if (!activeFrom && !activeTill) {
-                    const closestWeekday = Math.min(
-                        ...prize.weekdays.filter(day => day < todayWeekday)
-                    );
+            if (!activeFrom && !activeTill) {
+                const closestWeekday = Math.min(
+                    ...prize.weekdays.filter(day => day < todayWeekday)
+                );
 
-                    if (!isClaimed && closestWeekday < todayWeekday) {
-                        isMissed = true;
-                        isLocked = false;
-                    }
+                if (!isClaimed && closestWeekday < todayWeekday) {
+                    isMissed = true;
+                    isLocked = false;
                 }
             }
         }
@@ -88,21 +84,29 @@ const getPrizeStatus = (prize, index) => {
 
 // Get correct weekday name, if the restricted date type is by weekdays
 
-const getNextWeekdayDate = (weekdays) => {
+const getWeekdayDate = (prize) => {
     const today = new Date();
     const currentDay = today.getDay() === 0 ? 7 : today.getDay();
-    const todayDate = today.setHours(0, 0, 0, 0);
+    const targetWeekday = prize.weekdays[0];
 
-    for (let i = 0; i < weekdays.length; i++) {
-        const targetWeekday = weekdays[i];
-        const daysUntilNext = targetWeekday - currentDay;
-        const nextDate = new Date(todayDate);
-        nextDate.setDate(today.getDate() + daysUntilNext);
-        return nextDate;
-    }
+    const daysDifference = targetWeekday - currentDay;
 
-    return today; 
+    const targetDate = new Date(today);
+    targetDate.setDate(today.getDate() + daysDifference);
+
+    return targetDate;
 };
+
+// Proper naming of the month depending on the restriction type (by days/weekdays)
+const getPrizeDate = (prize, langCode) => {
+    if (prize.active_from_ts) {
+        return new Date(prize.active_from_ts).toLocaleDateString(langCode, { month: 'short', day: 'numeric' });;
+    } else if (prize.weekdays && prize.weekdays.length > 0) {
+        return getWeekdayDate(prize).toLocaleDateString(langCode, { month: 'short', day: 'numeric' });
+    } else {
+        return 'Date Unknown';
+    }
+}
 
 const onDragStart = (e) => {
     isDragging = true;
@@ -152,8 +156,6 @@ const loadMiniGames = async (saw_template_id, lang) => {
             playerInfo = userInfo;
             selectedGame = miniGames.find((g) => g.id === parseInt(saw_template_id, 10));
             prizes = selectedGame.prizes;
-
-            console.log("playerInfo", playerInfo)
 
             const gamesHistory = await window._smartico.api.getMiniGamesHistory({ limit: 100, offset: 0, saw_template_id: saw_template_id });
             miniGamesHistory = gamesHistory;
@@ -292,57 +294,28 @@ const renderPrizeCards = (lang) => {
         return firstWeekdayA - firstWeekdayB;
     });
 
-    let defaultPrizeDate = 'Available';
-    const firstActivePrize = prizes.find(prize => prize.active_from_ts);
-    const firstActiveWeekdayPrize = prizes.find(prize => prize.weekdays && prize.weekdays.length > 0);
-
-    if (firstActivePrize && firstActivePrize.active_from_ts) {
-        const firstActiveDate = new Date(firstActivePrize.active_from_ts);
-        firstActiveDate.setDate(firstActiveDate.getDate() - 1);
-        defaultPrizeDate = firstActiveDate.toLocaleDateString(lang, { month: 'short', day: 'numeric' });
-    } else {
-        const currentWeekday = currentDate.getDay() || 7;
-        const closestWeekday = firstActiveWeekdayPrize.weekdays.sort((a, b) => a - b)
-        .find(day => day > currentWeekday) || firstActiveWeekdayPrize.weekdays[0];
-
-        const firstActiveWeekdayDate = new Date(currentDate);
-        const dayDifference = (closestWeekday - currentWeekday) % 7 || 7;
-        firstActiveWeekdayDate.setDate(currentDate.getDate() + dayDifference);
-        firstActiveWeekdayDate.setDate(firstActiveWeekdayDate.getDate() - 1);
-        defaultPrizeDate = firstActiveWeekdayDate.toLocaleDateString(lang, { month: 'short', day: 'numeric' });
-    }
-
     prizes.forEach((prize, index) => {
-        let monthDate = '';
         let isActivePrize = false;
+        const monthDate = getPrizeDate(prize, lang)
 
         const acknowledgeWithClaim = prize.acknowledge_type === 'explicity-acknowledge';
 
         const { isLocked, isMissed, isClaimed } = getPrizeStatus(prize, index);
 
-        // Proper naming of the month depending on the restriction type (by days/weekdays)
-
-        if (index === 0) {
-            monthDate = defaultPrizeDate;
-        } else {
-            if (prize.active_from_ts) {
-                const activeDate = new Date(prize.active_from_ts);
-                monthDate = activeDate.toLocaleDateString(lang, { month: 'short', day: 'numeric' });
-                const activeFrom = new Date(prize.active_from_ts);
-                const activeTill = new Date(prize.active_till_ts);
-                if (currentDate >= activeFrom && currentDate <= activeTill) {
-                        activePrizeId = prize.id;
-                        isActivePrize = true;
-                }
-            
-            } else if (prize.weekdays && prize.weekdays.length > 0) {
-                const nextWeekdayDate = getNextWeekdayDate(prize.weekdays);
-                monthDate = nextWeekdayDate.toLocaleDateString(lang, { month: 'short', day: 'numeric' });
-                if (index === 0) {
-                    monthDate = defaultPrizeDate;
-                }
-            } else {
-                monthDate = 'Date Unknown';
+        // initialization of active prize by date/weekdays
+        if (prize.active_from_ts) {
+            const activeFrom = new Date(prize.active_from_ts);
+            const activeTill = new Date(prize.active_till_ts);
+            if (currentDate >= activeFrom && currentDate <= activeTill) {
+                    activePrizeId = prize.id;
+                    isActivePrize = true;
+            }
+        } else if (prize.weekdays && prize.weekdays.length > 0) {
+            const targetWeekday = prize.weekdays[0];
+            const currentDay = currentDate.getDay() === 0 ? 7 : currentDate.getDay();
+            if (targetWeekday === currentDay) {
+                activePrizeId = prize.id;
+                isActivePrize = true;
             }
         }
 
