@@ -34,15 +34,27 @@ const getPrizeStatus = (prize, index) => {
     let isClaimed = false;
 
     const today = new Date();
-    const todayWeekday = new Date().getDay();
+    const todayWeekday = new Date().getDay() === 0 ? 7 : today.getDay();
     const activeFrom = prize.active_from_ts ? new Date(prize.active_from_ts) : null;
     const activeTill = prize.active_till_ts ? new Date(prize.active_till_ts) : null;
 
     if (activeFrom) activeFrom.setHours(0, 0, 0, 0); // resetting active_from_ts to 00
     if (activeTill) activeTill.setHours(0, 0, 0, 0); // resetting active_till_ts to 00
 
+    const startOfWeek = new Date(today);
+    startOfWeek.setDate(today.getDate() - (todayWeekday - 1)); // Adjust to Monday as start of week
+    startOfWeek.setHours(0, 0, 0, 0);
+
+    const endOfWeek = new Date(startOfWeek);
+    endOfWeek.setDate(startOfWeek.getDate() + 6); // Set end of week to Sunday
+    endOfWeek.setHours(23, 59, 59, 999);
+
     const historyItem = miniGamesHistory.find(
-        (history) => history.saw_prize_id === prize.id && history.saw_template_id === selectedGame.id
+        (history) => 
+            history.saw_prize_id === prize.id && 
+            history.saw_template_id === selectedGame.id &&
+            new Date(history.create_date_ts) >= startOfWeek &&
+            new Date(history.create_date_ts) <= endOfWeek
     );
 
     if (historyItem) {
