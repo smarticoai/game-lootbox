@@ -28,7 +28,7 @@ const SCROLL_MOVE = 200;
 
 // Prize availability status (isLocked, isMissed, isClaimed) by active time of the prize
 
-const getPrizeStatus = (prize, index) => {
+const getPrizeStatus = (prize) => {
     let isLocked = false;
     let isMissed = false;
     let isClaimed = false;
@@ -51,13 +51,13 @@ const getPrizeStatus = (prize, index) => {
 
     const historyItem = miniGamesHistory.find(
         (history) => 
-            history.saw_prize_id === prize.id && 
+            history.saw_prize_id === prize.id &&
             history.saw_template_id === selectedGame.id &&
-            new Date(history.create_date_ts) >= startOfWeek &&
-            new Date(history.create_date_ts) <= endOfWeek
+            history.create_date_ts >= startOfWeek.getTime() &&
+            history.create_date_ts <= endOfWeek.getTime()
     );
 
-    if (historyItem) {
+    if (historyItem && historyItem.create_date_ts) {
         isClaimed = historyItem.is_claimed;
     }
 
@@ -76,7 +76,7 @@ const getPrizeStatus = (prize, index) => {
             isLocked = false;
             isMissed = false;
         } else {
-            isLocked = true;
+            isLocked = !isClaimed ? true : false;
 
             if (!activeFrom && !activeTill) {
                 const closestWeekday = Math.min(
@@ -255,24 +255,26 @@ const handlePrizeFlip = async (prize, index) => {
 
 // Use this function on order to trigger playMiniGame event and claim your prize
 
-const handleClaimPrizeInModal = async () => {
+const handleClaimPrizeInModal = async (prize) => {
     try {
-        const { prize_id } = await window._smartico.api.playMiniGame(selectedGame.id);
-        const prize = prizes.find((p) => p.id === prize_id);
+        await window._smartico.api.playMiniGame(selectedGame.id);
+        const winPrize = prizes.find((p) => p.id === prize.id);
 
-        flippedCardsState[prize.id] = true;
+        flippedCardsState[winPrize.id] = true;
 
         const updatedHistory = await window._smartico.api.getMiniGamesHistory({ limit: 100, offset: 0, saw_template_id: selectedGame.id });
+        
         miniGamesHistory = updatedHistory;
-        const historyItem = miniGamesHistory.find(
-            (history) => history.saw_prize_id === prize.id && history.saw_template_id === selectedGame.id
+        const historyItem = updatedHistory.find(
+            (history) => history.saw_prize_id === winPrize.id && history.saw_template_id === selectedGame.id
         );
-        if (historyItem) {
+
+        if (historyItem && historyItem.create_date_ts) {
             historyItem.is_claimed = true;
         }
 
         handleClosePrizeModal();
-        renderPrizeCards();
+        await renderPrizeCards();
 
     } catch (error) {
         console.error(`Failed to flip prize card ${prize.id}:`, error);
@@ -280,7 +282,7 @@ const handleClaimPrizeInModal = async () => {
 }
 
 
-const renderPrizeCards = (lang) => {
+const renderPrizeCards = async (lang) => {
     if (!prizeCards || !prizes || prizes.length === 0) {
         prizeCards.innerHTML = '';
         return;
@@ -307,12 +309,12 @@ const renderPrizeCards = (lang) => {
     });
 
     prizes.forEach((prize, index) => {
+        const { isLocked, isMissed, isClaimed } = getPrizeStatus(prize, index);
+        const monthDate = getPrizeDate(prize, lang);
+
         let isActivePrize = false;
-        const monthDate = getPrizeDate(prize, lang)
 
         const acknowledgeWithClaim = prize.acknowledge_type === 'explicity-acknowledge';
-
-        const { isLocked, isMissed, isClaimed } = getPrizeStatus(prize, index);
 
         // initialization of active prize by date/weekdays
         if (prize.active_from_ts) {
@@ -446,7 +448,7 @@ const renderPrizeModal = (prize) => {
         if (mainClaimButton) {
             mainClaimButton.addEventListener('click', (event) => {
                 event.stopPropagation();
-                handleClaimPrizeInModal();
+                handleClaimPrizeInModal(prize);
             })
         }
 }

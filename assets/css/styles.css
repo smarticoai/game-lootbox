@@ -202,6 +202,10 @@ body {
     width: 228px;
 }
 
+.prize-card.missed {
+    filter: grayscale(1);
+}
+
 .prize-card-content {
   position: absolute;
   width: 100%;
