@@ -10,6 +10,7 @@ const rulesText = document.getElementById('rules-button-text');
 const modalContainer = document.getElementById('rules-modal');
 const modalContentRules = document.getElementById('modal-content-rules');
 const prizeModalContainer = document.getElementById('prize-modal');
+const errorModalContainer = document.getElementById('error-modal');
 const outOfStockModalContainer = document.getElementById('out-of-stock-modal');
 
 let miniGames = [];
@@ -23,6 +24,7 @@ let flippedCardsState = {};
 let miniGamesHistory = [];
 let openRules = false;
 let cardClaimModal = false;
+let errorModal = false;
 let translations = {};
 const SCROLL_MOVE = 200;
 
@@ -169,6 +171,8 @@ const loadMiniGames = async (saw_template_id, lang) => {
             selectedGame = miniGames.find((g) => g.id === parseInt(saw_template_id, 10));
             prizes = selectedGame.prizes;
 
+            console.log("prizes", prizes)
+
             const gamesHistory = await window._smartico.api.getMiniGamesHistory({ limit: 100, offset: 0, saw_template_id: saw_template_id });
             miniGamesHistory = gamesHistory;
 
@@ -245,44 +249,48 @@ const handlePrizeFlip = async (prize, index) => {
     if (cardElement && !isClaimed) {
         cardElement.classList.add('flip');
         flippedCardsState[prize.id] = true;
+
+        const { err_code, err_message, prize_id } = await window._smartico.api.playMiniGame(selectedGame.id);
+
+        if (err_code === 0) {
+            const winPrize = prizes.find((p) => p.id === prize_id);
+
+            flippedCardsState[winPrize.id] = true;
+    
+            const updatedHistory = await window._smartico.api.getMiniGamesHistory({ limit: 100, offset: 0, saw_template_id: selectedGame.id });
+            
+            miniGamesHistory = updatedHistory;
+            const historyItem = updatedHistory.find(
+                (history) => history.saw_prize_id === winPrize.id && history.saw_template_id === selectedGame.id
+            );
+    
+            if (historyItem && historyItem.create_date_ts) {
+                historyItem.is_claimed = true;
+            }
+        } else {
+            handleOpenErrorModal(err_message);
+            cardElement.classList.remove('flip');
+            flippedCardsState[winPrize.id] = false;
+        }
+
+       
         if (!acknowledgeWithClaim) {
             setTimeout(() => {
                 handleOpenPrizeModal(prize);
-            }, 2000)
+            }, 1500)
         }
     }
 };
 
 // Use this function on order to trigger playMiniGame event and claim your prize
 
-const handleClaimPrizeInModal = async (prize) => {
-    try {
-        await window._smartico.api.playMiniGame(selectedGame.id);
-        const winPrize = prizes.find((p) => p.id === prize.id);
-
-        flippedCardsState[winPrize.id] = true;
-
-        const updatedHistory = await window._smartico.api.getMiniGamesHistory({ limit: 100, offset: 0, saw_template_id: selectedGame.id });
-        
-        miniGamesHistory = updatedHistory;
-        const historyItem = updatedHistory.find(
-            (history) => history.saw_prize_id === winPrize.id && history.saw_template_id === selectedGame.id
-        );
-
-        if (historyItem && historyItem.create_date_ts) {
-            historyItem.is_claimed = true;
-        }
-
+const handleClaimPrizeInModal = async () => {
         handleClosePrizeModal();
-        await renderPrizeCards();
-
-    } catch (error) {
-        console.error(`Failed to flip prize card ${prize.id}:`, error);
-    }
+        renderPrizeCards();
 }
 
 
-const renderPrizeCards = async (lang) => {
+const renderPrizeCards = (lang) => {
     if (!prizeCards || !prizes || prizes.length === 0) {
         prizeCards.innerHTML = '';
         return;
@@ -403,7 +411,7 @@ const handleOpenPrizeModal = (prize) => {
 
 const handleClosePrizeModal = () => {
     cardClaimModal = false;
-    prizeModalContainer.innerHTML = ''
+    prizeModalContainer.innerHTML = '';
 }
 
 
@@ -448,9 +456,49 @@ const renderPrizeModal = (prize) => {
         if (mainClaimButton) {
             mainClaimButton.addEventListener('click', (event) => {
                 event.stopPropagation();
-                handleClaimPrizeInModal(prize);
+                handleClaimPrizeInModal();
             })
         }
+}
+
+const handleOpenErrorModal = (error_message) => {
+    errorModal = true;
+	renderErrorModal(error_message);
+}
+
+const handleCloseErrorModal = () => {
+    errorModal = false;
+    errorModalContainer.innerHTML = ''
+}
+
+const renderErrorModal = (error_message) => {
+    if (!errorModal && !errorModalContainer) {
+        errorModalContainer.innerHTML = '';
+        return
+    }
+
+    errorModalContainer.innerHTML = `
+            <div class="modal-prize-wrapper active">
+                <div class="modal-prize-card">
+                    <div class="modal-close-button" onclick="handleCloseErrorModal();">
+                        <div class="close-btn"></div>
+                    </div>
+                     <div class="modal-prize-content">
+                        <div class="modal-prize-text-content">
+                            <div class="modal-prize-title stock">${translations.somethingWhentWrong}</div>
+                            <div class="modal-prize-message">
+                                ${error_message}
+                            </div>
+                        </div>
+                        <div class="modal-prize-buttons">
+                            <div class="modal-prize-button stock" onclick="handleCloseErrorModal();">
+                                <div class="modal-prize-button-text">${translations.doOk}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
 }
 
 const initializeGame = (saw_template_id, lang) => {
