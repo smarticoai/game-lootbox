@@ -9,7 +9,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Advent+Pro:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Creepster&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Eater&display=swap" rel="stylesheet">
-    <link href="./assets/css/styles.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Actor&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Chango&display=swap" rel="stylesheet">
+    <link href="./assets/css/cardsStyles.css" rel="stylesheet">
+    <link href="./assets/css/mapStyles.css" rel="stylesheet">
     <link href="/assets/favicon.ico" rel="icon" type="image/x-icon">
 
     <script>
@@ -63,10 +67,10 @@
         (document, 'https://libs.smartico.ai/smartico.js', function() {
             _smartico.init(_label_key, { brand_key: _brand_key});
             // suspending popups and inbox on this screen, so player will not be interrupted from the game itself
-            _smartico.on('init', () => {
+            _smartico.on('init', async () => {
                 _smartico.suspendInbox(true);
                 _smartico.suspendPopups(true);
-                 // Start the game with _saw_template_id and gameLanguage
+                // Initialize the game - layout detection happens inside game.js
                 initializeGame(_saw_template_id, gameLanguage);
             });
         });
@@ -82,40 +86,81 @@
         <button class="user-button" onclick="setUserRandom()">Random User</button>
     </div>
     <div class="game-container">
-        <div class="game-wrapper">
+        <div class="game-wrapper" id="game-wrapper">
             <div id="loading" class="loading">
                 <div class="spinner"></div>
             </div>
-            <div class="game-content">
-                <div class="game-header-container">
-                    <div class="game-header-title">
-                        <div class="game-title" id="game-title"></div>
-                    </div>
-                    <div class="game-header-description" id="game-header-description"></div>
-                </div>
-                <div class="game-center">
-                    <div class="prize-card-container" id="prize-card-container">
-                        <div class="game-cards" id="game-cards"></div>              
-                    </div>
-                </div>
-                <div class="game-footer">
-                    <div class="game-footer-container">
-                        <div class="game-nav-buttons">
-                            <div class="game-nav-btn left" id="scroll-left">
-                                <div class="game-nav-arrow left"></div>
+            
+            <!-- Cards Layout (game_layout === 1) -->
+            <div class="cards-wrapper" id="cards-layout" style="display: none;">
+                <div class="cards-background">
+                    <div class="game-content">
+                        <div class="game-header-container">
+                            <div class="game-header-title">
+                                <div class="game-title" id="game-title"></div>
                             </div>
-                            <div class="game-nav-btn right" id="scroll-right">
-                                <div class="game-nav-arrow right"></div>
+                            <div class="game-header-description" id="game-header-description"></div>
+                        </div>
+                        <div class="game-center">
+                            <div class="prize-card-container" id="prize-card-container">
+                                <div class="game-cards" id="game-cards"></div>              
                             </div>
                         </div>
-                        <div class="game-footer-rules">
-                            <div class="game-rules-btn" onclick="handleOpenRules();">
-                                <div class="rules-button-text" id="rules-button-text"></div>
+                        <div class="game-footer">
+                            <div class="game-footer-container">
+                                <div class="game-nav-buttons">
+                                    <div class="game-nav-btn left" id="scroll-left">
+                                        <div class="game-nav-arrow left"></div>
+                                    </div>
+                                    <div class="game-nav-btn right" id="scroll-right">
+                                        <div class="game-nav-arrow right"></div>
+                                    </div>
+                                </div>
+                                <div class="game-footer-rules">
+                                    <div class="game-rules-btn" onclick="handleOpenRules();">
+                                        <div class="rules-button-text" id="rules-button-text"></div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+            
+            <!-- Map Layout (game_layout === 2) -->
+            <div class="map-wrapper" id="map-layout" style="display: none;">
+                <div class="map-container" id="map-container">
+                    <div class="map-main-background" id="map-main-background">
+                        <div class="map-header-container">
+                            <div class="map-header-title">
+                                <div class="map-title" id="map-title" data-text=""></div>
+                            </div>
+                        </div>
+                        <div class="map-center">
+                            <div class="map-prizes-container">
+                                <div class="map-prizes" id="map-prizes"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="game-footer-map-hint" id="map-hint-icon">
+                    <div class="hint-container">
+                        <div class="hint-icon"></div>
+                        <div class="hint-message" id="map-hint-message"></div>
+                    </div>
+                </div>
+                <div class="game-footer-rules" id="map-footer-rules">
+                    <div class="game-rules-btn" onclick="handleOpenRules();">
+                        <div class="rules-button-text" id="map-rules-button-text"></div>
+                    </div>
+                </div>
+                <!-- Overlay for 3-tap interaction -->
+                <div class="overlay" id="map-overlay"></div>
+                <!-- Prize Won Modal -->
+                <div class="won-modal-overlay" id="map-prize-won-modal"></div>
+            </div>
+            
+            <!-- Shared Modals -->
             <div id="rules-modal" class="rules-modal"></div>
             <div id="prize-modal" class="prize-modal"></div>
             <div id="error-modal" class="error-modal"></div>

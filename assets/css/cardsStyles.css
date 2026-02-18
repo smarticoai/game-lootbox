@@ -61,18 +61,18 @@ body {
     width: 100%;
 }
 
+/* Game Wrapper - Neutral container with loading state */
 .game-container .game-wrapper {
     display: flex;
     align-items: center;
     justify-content: center;
     width: 1118px;
     height: 670px;
-    background-image: url('../../assets/img/game-bg.png');
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: contain;
+    background-color: rgba(0, 0, 0, 0.85);
+    border-radius: 12px;
     margin: 0 auto;
     position: relative;
+    overflow: hidden;
 }
 
 .game-container .game-wrapper .loading {
@@ -81,14 +81,17 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: black;
+    background-color: rgba(0, 0, 0, 0.9);
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 9999;
-    opacity: 0.7;
-    display: none;
-    transition: all 1s ease;
+    transition: opacity 0.5s ease;
+}
+
+.game-container .game-wrapper .loading.hidden {
+    opacity: 0;
+    pointer-events: none;
 }
 
 .game-container .game-wrapper .loading .spinner {
@@ -100,8 +103,28 @@ body {
     animation: spin 1s linear infinite;
 }
 
-.game-wrapper .game-content {
+/* Cards Wrapper - Contains Cards Layout with its background */
+.game-wrapper .cards-wrapper {
     display: none;
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+.game-wrapper .cards-wrapper .cards-background {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    background-image: url('../img/cards/game-bg.png');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+}
+
+.game-wrapper .cards-wrapper .cards-background .game-content {
+    display: flex;
     align-items: center;
     justify-content: center;
     flex-direction: column;
@@ -109,7 +132,7 @@ body {
     height: 100%;
 }
 
-.game-wrapper .game-content .game-header-container {
+.cards-wrapper .game-content .game-header-container {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -119,14 +142,14 @@ body {
     flex: 1;
 }
 
-.game-wrapper .game-content .game-header-container .game-header-title {
+.cards-wrapper .game-content .game-header-container .game-header-title {
     display: flex;
     align-items: center;
     justify-content: center;
     width: 90%;
 }
 
-.game-wrapper .game-content .game-header-container .game-header-title .game-title {
+.cards-wrapper .game-content .game-header-container .game-header-title .game-title {
     font-family: "Eater", serif;
     font-size: 47px;
     line-height: 60px;
@@ -140,7 +163,7 @@ body {
     width: 90%;
 }
 
-.game-wrapper .game-content .game-header-container .game-header-description {
+.cards-wrapper .game-content .game-header-container .game-header-description {
     font-family: "Advent Pro", sans-serif;
     font-weight: 700;
     font-size: 24px;
@@ -155,7 +178,7 @@ body {
     overflow: hidden;
 }
 
-.game-wrapper .game-content .game-center {
+.cards-wrapper .game-content .game-center {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -164,7 +187,7 @@ body {
     flex: 4;
 }
 
-.game-wrapper .game-content .game-center .prize-card-container {
+.cards-wrapper .game-content .game-center .prize-card-container {
     display: flex;
     align-items: center;
     justify-content: flex-start;
@@ -177,7 +200,7 @@ body {
     transition: transform 0.5s ease;
 }
 
-.game-wrapper .game-content .game-center .prize-card-container .game-cards {
+.cards-wrapper .game-content .game-center .prize-card-container .game-cards {
     display: flex;
     justify-content: center;
     align-items: flex-end;
@@ -220,7 +243,7 @@ body {
 }
 
 .prize-card-content.claimed:hover {
-    box-shadow: none;
+    cursor: pointer;
 }
 
 .prize-card-content.missed:hover {
@@ -251,7 +274,7 @@ body {
 }
 
 .front-side {
-    background-image: url('../img/card-front-bg.png');
+    background-image: url('../img/cards/card-front-bg.png');
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
@@ -270,7 +293,7 @@ body {
     width: 100%;
     height: 100%;
     border-radius: 18px;
-    background-image: url('../img/card-back-bg.png');
+    background-image: url('../img/cards/card-back-bg.png');
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
@@ -333,7 +356,7 @@ body {
     left: -9px;
     width: 131px;
     height: 23px;
-    background-image: url('../img/claim-btn-drips.png');
+    background-image: url('../img/cards/claim-btn-drips.png');
     background-repeat: no-repeat;
     background-position: center;
     background-size: contain;
@@ -390,20 +413,6 @@ body {
     cursor: auto;
 }
 
-.prize-card.locked::before {
-    content: '';
-    position: absolute;
-    top: -3px;
-    left: -4px;
-    width: 195px;
-    height: 303px;
-    background-image: url('../img/locked.png');
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: contain;
-    z-index: 3;
-}
-
 .back-side.missed {
     background: radial-gradient(50% 50% at 50% 50%, #4A01B5 0%, #3E043D 100%);
 }
@@ -415,7 +424,7 @@ body {
     left: 0;
     width: 189px;
     height: 290px;
-    background-image: url('../img/missed.png');
+    background-image: url('../img/cards/missed.png');
     background-repeat: no-repeat;
     background-position: center;
     background-size: contain;
@@ -424,9 +433,107 @@ body {
     z-index: 1;
 }
 
+/* Out of Stock Styles */
+
+.prize-card.out-of-stock {
+    cursor: pointer;
+}
+
+.prize-card.out-of-stock .prize-card-content:hover {
+    box-shadow: none;
+}
+
+.back-side.out-of-stock {
+    background: radial-gradient(50% 50% at 50% 50%, #4A01B5 0%, #3E043D 100%);
+}
+
+.back-side.out-of-stock::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 18px;
+    background: rgba(0, 0, 0, 0.5);
+    pointer-events: none;
+    z-index: 1;
+}
+
+.prize-content .prize-out-of-stock-text {
+    text-align: center;
+    font-family: 'Advent Pro', sans-serif;
+    font-weight: 700;
+    font-size: 18px;
+    color: #FF5F72;
+    padding: 10px;
+    display: -webkit-box;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    z-index: 2;
+    position: relative;
+}
+
+/* Locked Overlay inside front-side */
+
+.front-side .locked-overlay {
+    position: absolute;
+    top: -3px;
+    left: -4px;
+    width: calc(100% + 8px);
+    height: calc(100% + 6px);
+    background-image: url('../img/cards/locked.png');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    z-index: 3;
+    pointer-events: none;
+}
+
+/* Missed Overlay inside back-side */
+
+.back-side .missed-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('../img/cards/missed.png');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    mix-blend-mode: color-dodge;
+    z-index: 1;
+    pointer-events: none;
+}
+
+/* No Image placeholder */
+
+.prize-content .prize-front-no-image {
+    width: 120px;
+    height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    filter: drop-shadow(0 0 15px #44027a);
+    background-image: url('../img/cards/prize-no-image.png');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+}
+
+/* Spinner animation */
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
 /* Game Footer */
 
-.game-wrapper .game-content .game-footer {
+.cards-wrapper .game-content .game-footer {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -436,7 +543,7 @@ body {
     position: relative;
 }
 
-.game-wrapper .game-content .game-footer .game-footer-container {
+.cards-wrapper .game-content .game-footer .game-footer-container {
     display: flex;
     justify-content: center;
     align-items: flex-start;
@@ -444,7 +551,7 @@ body {
     width: 100%;
 }
 
-.game-wrapper .game-content .game-footer .game-footer-container .game-nav-buttons {
+.cards-wrapper .game-content .game-footer .game-footer-container .game-nav-buttons {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -452,7 +559,7 @@ body {
     width: 100%;
 }
 
-.game-wrapper .game-content .game-footer .game-footer-container .game-nav-buttons .game-nav-btn {
+.cards-wrapper .game-content .game-footer .game-footer-container .game-nav-buttons .game-nav-btn {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -465,40 +572,40 @@ body {
     cursor: pointer;
 }
 
-.game-wrapper .game-content .game-footer .game-footer-container .game-nav-buttons .game-nav-btn:hover {
+.cards-wrapper .game-content .game-footer .game-footer-container .game-nav-buttons .game-nav-btn:hover {
     filter: opacity(0.7);
 }
 
-.game-wrapper .game-content .game-footer .game-footer-container .game-nav-buttons .game-nav-btn.left::before, 
-.game-wrapper .game-content .game-footer .game-footer-container .game-nav-buttons .game-nav-btn.right::before {
+.cards-wrapper .game-content .game-footer .game-footer-container .game-nav-buttons .game-nav-btn.left::before, 
+.cards-wrapper .game-content .game-footer .game-footer-container .game-nav-buttons .game-nav-btn.right::before {
     background-repeat: no-repeat;
     background-position: center;
     background-size: contain;
     
 }
 
-.game-wrapper .game-content .game-footer .game-footer-container .game-nav-buttons .game-nav-btn.left::before {
+.cards-wrapper .game-content .game-footer .game-footer-container .game-nav-buttons .game-nav-btn.left::before {
     content: '';
     position: absolute;
     bottom: -34px;
     left: 0;
     width: 100%;
     height: 100%;
-    background-image: url('../img/button-drips.png');
+    background-image: url('../img/cards/button-drips.png');
 }
 
-.game-wrapper .game-content .game-footer .game-footer-container .game-nav-buttons .game-nav-btn.right::before {
+.cards-wrapper .game-content .game-footer .game-footer-container .game-nav-buttons .game-nav-btn.right::before {
     content: '';
     position: absolute;
     bottom: -34px;
     left: 0;
     width: 100%;
     height: 100%;
-    background-image: url('../img/button-drips.png');
+    background-image: url('../img/cards/button-drips.png');
     transform: rotateY(180deg);
 }
 
-.game-wrapper .game-content .game-footer .game-footer-container .game-nav-buttons .game-nav-btn .game-nav-arrow {
+.cards-wrapper .game-content .game-footer .game-footer-container .game-nav-buttons .game-nav-btn .game-nav-arrow {
     width: 9px;
     height: 19px;
     background-repeat: no-repeat;
@@ -506,16 +613,16 @@ body {
     background-size: contain;
 }
 
-.game-wrapper .game-content .game-footer .game-footer-container .game-nav-buttons .game-nav-btn .game-nav-arrow.left {
-    background-image: url('../img/nav-arrow.png');
+.cards-wrapper .game-content .game-footer .game-footer-container .game-nav-buttons .game-nav-btn .game-nav-arrow.left {
+    background-image: url('../img/cards/nav-arrow.png');
 }
 
-.game-wrapper .game-content .game-footer .game-footer-container .game-nav-buttons .game-nav-btn .game-nav-arrow.right {
-    background-image: url('../img/nav-arrow.png');
+.cards-wrapper .game-content .game-footer .game-footer-container .game-nav-buttons .game-nav-btn .game-nav-arrow.right {
+    background-image: url('../img/cards/nav-arrow.png');
     transform: rotateY(180deg);
 }
 
-.game-wrapper .game-content .game-footer .game-footer-container .game-footer-rules {
+.cards-wrapper .game-content .game-footer .game-footer-container .game-footer-rules {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -524,7 +631,7 @@ body {
     right: 30px;
 }
 
-.game-wrapper .game-content .game-footer .game-footer-container .game-footer-rules .game-rules-btn {
+.cards-wrapper .game-content .game-footer .game-footer-container .game-footer-rules .game-rules-btn {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -537,24 +644,24 @@ body {
     padding: 10px;
 }
 
-.game-wrapper .game-content .game-footer .game-footer-container .game-footer-rules .game-rules-btn:hover {
+.cards-wrapper .game-content .game-footer .game-footer-container .game-footer-rules .game-rules-btn:hover {
     filter: opacity(0.7);
 }
 
-.game-wrapper .game-content .game-footer .game-footer-container .game-footer-rules .game-rules-btn::before {
+.cards-wrapper .game-content .game-footer .game-footer-container .game-footer-rules .game-rules-btn::before {
     content: '';
     position: absolute;
     bottom: -32px;
     left: 0;
     width: 100%;
     height: 100%;
-    background-image: url('../img/rules-btn-drips.png');
+    background-image: url('../img/cards/rules-btn-drips.png');
     background-repeat: no-repeat;
     background-position: center;
     background-size: contain;
 }
 
-.game-wrapper .game-content .game-footer .game-footer-container .game-footer-rules .game-rules-btn .rules-button-text {
+.cards-wrapper .game-content .game-footer .game-footer-container .game-footer-rules .game-rules-btn .rules-button-text {
     font-family: 'Advent Pro', sans-serif;
     font-size: 24px;
     font-weight: 700;
@@ -644,7 +751,7 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background-image: url('../img/rules-btn-drips.png');
+    background-image: url('../img/cards/rules-btn-drips.png');
     background-repeat: no-repeat;
     background-position: center;
     background-size: contain;
@@ -800,7 +907,7 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background-image: url('../img/claim-btn-drips.png');
+    background-image: url('../img/cards/claim-btn-drips.png');
     background-repeat: no-repeat;
     background-size: contain;
     background-position: center;
@@ -808,7 +915,7 @@ body {
 
 .game-wrapper .modal-prize-wrapper .modal-prize-content .modal-prize-buttons .modal-prize-button.cancel::before,
 .game-wrapper .modal-prize-wrapper .modal-prize-content .modal-prize-buttons .modal-prize-button.stock::before {
-    background-image: url('../img/rules-btn-drips.png');
+    background-image: url('../img/cards/rules-btn-drips.png');
 }
 
 .game-wrapper .modal-prize-wrapper .modal-prize-content .modal-prize-buttons .modal-prize-button .modal-prize-button-text {
@@ -854,20 +961,24 @@ body {
     }
 
     .game-container .game-wrapper {
-        background-image: url('../img/game-bg-mobile.png');
         width: 100dvw;
         height: 100dvh;
         margin: unset;
-        background-size: cover;
         overflow: hidden;
+        border-radius: 0;
     }
 
-    .game-wrapper .game-content {
+    .game-wrapper .cards-wrapper .cards-background {
+        background-image: url('../img/cards/game-bg-mobile.png');
+        background-size: cover;
+    }
+
+    .cards-wrapper .game-content {
         justify-content: space-between;
         padding: 20px 0;
     }
 
-    .game-wrapper .game-content .game-header-container {
+    .cards-wrapper .game-content .game-header-container {
         height: unset;
         width: 100%;
         margin-top: unset;
@@ -875,12 +986,12 @@ body {
         gap: 10px;
     }
 
-    .game-wrapper .game-content .game-header-container .game-header-title {
+    .cards-wrapper .game-content .game-header-container .game-header-title {
         width: 95%;
         align-items: flex-start;
     }
 
-    .game-wrapper .game-content .game-header-container .game-header-title .game-title {
+    .cards-wrapper .game-content .game-header-container .game-header-title .game-title {
         font-size: 30px;
         line-height: 35px;
         width: 90%;
@@ -891,23 +1002,23 @@ body {
         -webkit-box-orient: vertical;
     }
 
-    .game-wrapper .game-content .game-header-container .game-header-description {
+    .cards-wrapper .game-content .game-header-container .game-header-description {
         font-size: 21px;
         -webkit-line-clamp: 3;
         line-height: unset;
         width: 90%;
     }
 
-    .game-wrapper .game-content .game-center {
+    .cards-wrapper .game-content .game-center {
         flex: none;
         height: 480px;
     }
 
-    .game-wrapper .game-content .game-center .prize-card-container {
+    .cards-wrapper .game-content .game-center .prize-card-container {
         scroll-snap-type: x mandatory;
     }
 
-    .game-wrapper .game-content .game-center .prize-card-container .game-cards {
+    .cards-wrapper .game-content .game-center .prize-card-container .game-cards {
         gap: 30px;
     }
 
@@ -922,12 +1033,12 @@ body {
         height: 370px;
     }
 
-    .prize-card.locked::before {
-        width: 218px;
-        height: 339px;
+    .back-side.missed::before {
+        width: 100%;
+        height: 100%;
     }
 
-    .back-side.missed::before {
+    .back-side.missed .missed-overlay {
         width: 100%;
         height: 100%;
     }
@@ -940,11 +1051,16 @@ body {
         width: 240px;
     }
 
-    .game-wrapper .game-content .game-footer {
+    .front-side .locked-overlay {
+        width: calc(100% + 6px);
+        height: calc(100% + 13px);
+    }
+
+    .cards-wrapper .game-content .game-footer {
         flex: none;
     }
 
-    .game-wrapper .game-content .game-footer .game-footer-container .game-footer-rules {
+    .cards-wrapper .game-content .game-footer .game-footer-container .game-footer-rules {
         right: 10px;
     }
 
@@ -989,20 +1105,24 @@ body {
     }
 
     .game-container .game-wrapper {
-        background-image: url('../img/game-bg-mobile.png');
         width: 100dvw;
         height: 100dvh;
         margin: unset;
-        background-size: cover;
         overflow: hidden;
+        border-radius: 0;
     }
 
-    .game-wrapper .game-content {
+    .game-wrapper .cards-wrapper .cards-background {
+        background-image: url('../img/cards/game-bg-mobile.png');
+        background-size: cover;
+    }
+
+    .cards-wrapper .game-content {
         justify-content: space-between;
         padding: 20px 0 0;
     }
 
-    .game-wrapper .game-content .game-header-container {
+    .cards-wrapper .game-content .game-header-container {
         height: unset;
         width: 100%;
         margin-top: unset;
@@ -1010,12 +1130,12 @@ body {
         gap: 10px;
     }
 
-    .game-wrapper .game-content .game-header-container .game-header-title {
+    .cards-wrapper .game-content .game-header-container .game-header-title {
         width: 95%;
         align-items: flex-start;
     }
 
-    .game-wrapper .game-content .game-header-container .game-header-title .game-title {
+    .cards-wrapper .game-content .game-header-container .game-header-title .game-title {
         font-size: 28px;
         line-height: 35px;
         width: 90%;
@@ -1026,22 +1146,22 @@ body {
         -webkit-box-orient: vertical;
     }
 
-    .game-wrapper .game-content .game-header-container .game-header-description {
+    .cards-wrapper .game-content .game-header-container .game-header-description {
         font-size: 21px;
         line-height: unset;
         -webkit-line-clamp: 3;
         width: 90%;
     }
 
-    .game-wrapper .game-content .game-center {
+    .cards-wrapper .game-content .game-center {
         height: 410px;
     }
 
-    .game-wrapper .game-content .game-center .prize-card-container {
+    .cards-wrapper .game-content .game-center .prize-card-container {
         scroll-snap-type: x mandatory;
     }
 
-    .game-wrapper .game-content .game-center .prize-card-container .game-cards {
+    .cards-wrapper .game-content .game-center .prize-card-container .game-cards {
         gap: 30px;
     }
 
@@ -1055,15 +1175,25 @@ body {
         height: 100%;
     }
 
+    .back-side.missed .missed-overlay {
+        width: 100%;
+        height: 100%;
+    }
+
+    .front-side .locked-overlay {
+        width: calc(100% + 6px);
+        height: calc(100% + 6px);
+    }
+
     .prize-card .prize-card-content .prize-card-bottom-glow.active-prize {
         width: 212px;
     }
 
-    .game-wrapper .game-content .game-footer {
+    .cards-wrapper .game-content .game-footer {
         flex: none;
     }
 
-    .game-wrapper .game-content .game-footer .game-footer-container .game-footer-rules {
+    .cards-wrapper .game-content .game-footer .game-footer-container .game-footer-rules {
         right: 10px;
     }
 
