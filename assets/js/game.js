@@ -751,9 +751,6 @@ const loadMiniGames = async (saw_template_id, lang) => {
         const gameLayout = selectedGame.saw_template_ui_definition?.game_layout || SAWGameLayout.Horizontal;
         currentLayout = gameLayout;
 
-        console.log("selectedGame", selectedGame);
-        console.log("game_layout", gameLayout);
-
         // Fetch history
         const gamesHistory = await window._smartico.api.getMiniGamesHistory({
             limit: 1000,
@@ -773,11 +770,9 @@ const loadMiniGames = async (saw_template_id, lang) => {
         // Render based on layout type
         if (currentLayout === SAWGameLayout.VerticalMap) {
             // Map Layout
-            console.log('Initializing Map Layout');
             initializeMapLayout(lang);
         } else {
             // Cards Layout (default)
-            console.log('Initializing Cards Layout');
             initializeCardsLayout(lang);
         }
     } catch (error) {
