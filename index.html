@@ -24,6 +24,7 @@
         const defaultUser = urlParams.get('user_ext_id') || 'lootbox82464760';
         const _saw_template_id = urlParams.get('saw_template_id') || 1514;
         const gameLanguage = urlParams.get('lang') || "en";
+        const hideUser = urlParams.get('hideUser') === 'true';
 
         window._smartico_allow_localhost = true;
         window._smartico_language = gameLanguage;
@@ -32,9 +33,16 @@
     <script>
         window.addEventListener('DOMContentLoaded', function () {
             const userInput = document.getElementById('user');
+            const userSection = document.querySelector('.user');
+            const gameContainerSection = document.querySelector('.game-container');
             
             if (userInput) {
                 userInput.value = defaultUser;
+            }
+
+            if (hideUser && userSection) {
+                userSection.style.display = 'none';
+                gameContainerSection.style.marginTop = '35px';
             }
 
             window.localStorage.getItem('label_key') || _label_key;
